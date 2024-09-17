@@ -20,7 +20,7 @@ class CJEnc(JSONEncoder):
 
     def __init__(self, *, skipkeys=False, ensure_ascii=True,
             check_circular=True, allow_nan=True, sort_keys=False,
-            indent=None, separators=None, default=None, custom_classes=[]):
+            indent=None, separators=None, default=None, custom_classes=[], one_shot=False):
         """Constructor for CJEnc.
 
         Parameters:
@@ -39,6 +39,7 @@ class CJEnc(JSONEncoder):
                          separators=separators,
                          default=default)
         self.add_custom_classes(custom_classes)
+        self.one_shot = one_shot
 
     def add_custom_classes(self, classes):
         self.custom_classes = classes
@@ -63,7 +64,7 @@ class CJEnc(JSONEncoder):
         # This doesn't pass the iterator directly to ''.join() because the
         # exceptions aren't as detailed.  The list call should be roughly
         # equivalent to the PySequence_Fast that ''.join() would do.
-        chunks = self.iterencode(o, _one_shot=(not self.custom_classes))
+        chunks = self.iterencode(o, _one_shot=self.one_shot)
         if not isinstance(chunks, (list, tuple)):
             chunks = list(chunks)
         return ''.join(chunks)
